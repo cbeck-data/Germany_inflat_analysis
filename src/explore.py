@@ -58,4 +58,15 @@ plt.plot(series.index,
          label = "Germany CPI over time, base year = 2015",
          linewidth = 2
          )
+# plt.show() # toggle this on and off for reference
+
+series['Infl_rate'] = series['Germany_CPI'].pct_change()
+print(series.head())
+
+plt.figure(figsize = (12, 8))
+plt.plot(series.index,
+         series['Infl_rate'],
+         label = "Germany Inflation Rate over time, base year = 2015",
+         linewidth = 2
+         )
 plt.show()
