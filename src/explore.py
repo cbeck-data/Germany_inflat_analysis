@@ -69,4 +69,59 @@ plt.plot(series.index,
          label = "Germany Inflation Rate over time, base year = 2015",
          linewidth = 2
          )
+# plt.show()
+
+# this shows a potentially stationary time series now.
+# What we wanna test from here is whether rho superceeds 1/-1
+# visually, It doesn't seem to, but we'll do the Augmented Dickens Fuller Test
+
+# """
+# I don't know whether pandas has an ACF device,
+# But it sounds pretty fun, so I'm coding one myself hehe
+# """
+
+# ACF means plotting rho on all x[t] for period k ( = 1 )
+
+# Lets calculate rho for my differenced series:
+
+k = [i for i in range(13)] # ugh, guess I'll use list comprehensions then
+# this calculates over all 12 months
+k = k[1:]
+print(k) # k from 1 - 10
+
+y = series['Infl_rate'].dropna().values # give me all non nan values for infl rate
+k_record = {}
+k_record[0] = 1.0
+for k in k:
+    y_t = y[k:] # series of all y except the first
+    y_tk = y[:-k] # series of all y except the last
+# this just generates, and overwrites.
+# I need something that generates new vars and saves them :/
+    cor_matrix = np.corrcoef(y_t, y_tk)
+    cor = cor_matrix[0, 1] # line one, col two
+    print(f"correlation at k = {k}: {cor}")
+    print(f"len of {k}-list: {len(y_t)}")
+    k_record[k] = cor
+# this essentially give me a k: cor dict for plotting
+
+
+plt.figure(figsize= (12, 8))
+plt.stem(k_record.keys(),
+         k_record.values()
+         )
+# plt.show()
+
+from statsmodels.tsa.stattools import acf
+acf_res = acf(x =
+                                       series['Infl_rate'].dropna(),
+                                       nlags = 12,
+                                       alpha = 0.05,
+                                       adjusted= True
+                                       )
+print(acf_res[0])
+lag_list = range(13)
+plt.figure(figsize= (12, 8))
+plt.stem(lag_list,
+         acf_res[0]
+         )
 plt.show()
